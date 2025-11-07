@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TriMessage - Чат</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/chat.css">
+</head>
+<body>
+    <div class="messenger" id="messengerPage">
+        <div class="header">
+            <div class="header-logo">
+                <span class="header-logo-icon">💬</span>
+                TriMessage
+            </div>
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">И</div>
+                <span class="username" id="usernameDisplay">Иван</span>
+                <button class="logout-btn" id="logoutBtn">Выйти</button>
+            </div>
+        </div>
+        <div class="messenger-body">
+            <div class="contacts">
+                <div class="contacts-header">
+                    <h3>Контакты</h3>
+                    <button class="new-chat-btn" id="newChatBtn">+</button>
+                </div>
+                <div class="contacts-list" id="contactsList">
+                    <!-- Контакты будут загружены через JS -->
+                </div>
+            </div>
+
+            <div class="chat-area">
+                <div class="chat-header" id="chatHeader">
+                    <div class="chat-partner-info">
+                        <div class="chat-avatar" id="chatAvatar">А</div>
+                        <div class="chat-partner-name" id="chatPartnerName">Выберите чат</div>
+                    </div>
+                    <div class="chat-actions">
+                        <button class="action-btn" id="callBtn">📞</button>
+                        <button class="action-btn" id="videoBtn">🎥</button>
+                        <button class="action-btn" id="infoBtn">ℹ️</button>
+                    </div>
+                </div>
+                <div class="messages" id="messages">
+                    <div class="welcome-message">
+                        <h3>Добро пожаловать в TriMessage!</h3>
+                        <p>Выберите чат, чтобы начать общение</p>
+                    </div>
+                </div>
+                <div class="input-area" id="inputArea" style="display: none;">
+                    <div class="input-actions">
+                        <button class="attachment-btn" id="attachmentBtn">📎</button>
+                        <button class="emoji-btn" id="emojiBtn">😊</button>
+                    </div>
+                    <input type="text" class="message-input" id="messageInput" placeholder="Введите сообщение...">
+                    <button class="send-btn" id="sendBtn">Отправить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для нового чата -->
+    <div class="modal" id="newChatModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Новый чат</h3>
+                <button class="close-btn" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="searchContact" placeholder="Поиск контактов...">
+                <div class="contacts-search-results" id="contactsSearchResults">
+                    <!-- Результаты поиска -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/chat.js"></script>
+</body>
+</html>
