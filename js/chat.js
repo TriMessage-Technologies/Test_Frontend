@@ -37,26 +37,44 @@ function initChat() {
 // Настройка обработчиков событий
 function setupEventListeners() {
     // Кнопка выхода
-    document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', handleLogout);
+    }
 
     // Кнопка нового чата
-    document.getElementById('newChatBtn').addEventListener('click', showNewChatModal);
+    const newChatBtn = document.getElementById('newChatBtn');
+    if (newChatBtn) {
+        newChatBtn.addEventListener('click', showNewChatModal);
+    }
 
     // Кнопка закрытия модального окна
-    document.getElementById('closeModalBtn').addEventListener('click', hideNewChatModal);
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', hideNewChatModal);
+    }
 
     // Кнопка отправки сообщения
-    document.getElementById('sendBtn').addEventListener('click', sendMessage);
+    const sendBtn = document.getElementById('sendBtn');
+    if (sendBtn) {
+        sendBtn.addEventListener('click', sendMessage);
+    }
 
     // Отправка сообщения по Enter
-    document.getElementById('messageInput').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            sendMessage();
-        }
-    });
+    const messageInput = document.getElementById('messageInput');
+    if (messageInput) {
+        messageInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    }
 
     // Поиск контактов
-    document.getElementById('searchContact').addEventListener('input', searchContacts);
+    const searchContact = document.getElementById('searchContact');
+    if (searchContact) {
+        searchContact.addEventListener('input', searchContacts);
+    }
 
     // Закрытие модального окна при клике вне его
     window.addEventListener('click', function (e) {
@@ -65,6 +83,24 @@ function setupEventListeners() {
             hideNewChatModal();
         }
     });
+}
+
+// Функция выхода
+function handleLogout() {
+    // Получаем текущего пользователя для персонализированного сообщения
+    const currentUser = getFromStorage('currentUser');
+    const username = currentUser ? currentUser.username : '';
+
+    // Удаляем данные пользователя
+    localStorage.removeItem('currentUser');
+
+    // Показываем уведомление о выходе
+    showNotification(`До свидания, ${username}!`, 'info');
+
+    // Перенаправляем на страницу входа
+    setTimeout(() => {
+        window.location.href = 'index.html';
+    }, 1000);
 }
 
 // Загрузка контактов
@@ -80,6 +116,8 @@ function loadContacts() {
     ];
 
     const contactsList = document.getElementById('contactsList');
+    if (!contactsList) return;
+
     contactsList.innerHTML = '';
 
     contacts.forEach(contact => {
@@ -153,7 +191,10 @@ function selectContact(contact) {
     activeContactId = contact.id;
 
     // Показываем поле ввода сообщения
-    document.getElementById('inputArea').style.display = 'flex';
+    const inputArea = document.getElementById('inputArea');
+    if (inputArea) {
+        inputArea.style.display = 'flex';
+    }
 
     // Загружаем сообщения для выбранного контакта
     loadMessages(contact.id);
@@ -165,6 +206,8 @@ function loadMessages(contactId) {
     const messages = chats[contactId] || [];
 
     const messagesContainer = document.getElementById('messages');
+    if (!messagesContainer) return;
+
     messagesContainer.innerHTML = '';
 
     if (messages.length === 0) {
@@ -181,7 +224,7 @@ function loadMessages(contactId) {
         const messageElement = document.createElement('div');
         messageElement.className = `message ${message.type}`;
         messageElement.innerHTML = `
-            <div>${escapeHtml(message.text)}</div>
+            <div class="message-text">${escapeHtml(message.text)}</div>
             <div class="timestamp">${message.time}</div>
         `;
         messagesContainer.appendChild(messageElement);
@@ -194,6 +237,8 @@ function loadMessages(contactId) {
 // Отправка сообщения
 function sendMessage() {
     const messageInput = document.getElementById('messageInput');
+    if (!messageInput) return;
+
     const text = messageInput.value.trim();
 
     if (!text) {
@@ -223,7 +268,12 @@ function sendMessage() {
     }
 
     chats[activeContactId].push(newMessage);
-    saveToStorage('chats', chats);
+
+    // Сохраняем чаты
+    if (!saveToStorage('chats', chats)) {
+        showNotification('Ошибка сохранения сообщения', 'error');
+        return;
+    }
 
     // Очищаем поле ввода
     messageInput.value = '';
@@ -286,7 +336,11 @@ function simulateReply(contactId) {
         }
 
         chats[contactId].push(replyMessage);
-        saveToStorage('chats', chats);
+
+        if (!saveToStorage('chats', chats)) {
+            console.error('Ошибка сохранения ответного сообщения');
+            return;
+        }
 
         // Если это активный чат, обновляем сообщения
         if (activeContactId === contactId) {
@@ -311,20 +365,38 @@ function simulateReply(contactId) {
 
 // Показать модальное окно нового чата
 function showNewChatModal() {
-    document.getElementById('newChatModal').style.display = 'flex';
+    const modal = document.getElementById('newChatModal');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
 }
 
 // Скрыть модальное окно нового чата
 function hideNewChatModal() {
-    document.getElementById('newChatModal').style.display = 'none';
-    document.getElementById('searchContact').value = '';
-    document.getElementById('contactsSearchResults').innerHTML = '';
+    const modal = document.getElementById('newChatModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+
+    const searchContact = document.getElementById('searchContact');
+    if (searchContact) {
+        searchContact.value = '';
+    }
+
+    const contactsSearchResults = document.getElementById('contactsSearchResults');
+    if (contactsSearchResults) {
+        contactsSearchResults.innerHTML = '';
+    }
 }
 
 // Поиск контактов
 function searchContacts() {
-    const searchTerm = document.getElementById('searchContact').value.toLowerCase();
+    const searchContact = document.getElementById('searchContact');
+    if (!searchContact) return;
+
+    const searchTerm = searchContact.value.toLowerCase();
     const contactsList = document.getElementById('contactsSearchResults');
+    if (!contactsList) return;
 
     // В реальном приложении здесь был бы запрос к серверу
     // Для демо используем тестовые данные
@@ -371,6 +443,7 @@ function searchContacts() {
 // Добавление нового контакта
 function addNewContact(contact) {
     const contactsList = document.getElementById('contactsList');
+    if (!contactsList) return;
 
     const contactElement = document.createElement('div');
     contactElement.className = 'contact';

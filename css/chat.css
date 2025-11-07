@@ -245,6 +245,7 @@
     background: var(--background-primary);
     display: flex;
     flex-direction: column;
+    gap: 10px;
 }
 
 .welcome-message {
@@ -261,21 +262,29 @@
 .message {
     max-width: 70%;
     padding: 12px 16px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     border-radius: 12px;
     position: relative;
     box-shadow: var(--shadow);
+    animation: messageAppear 0.3s ease-out;
+}
+
+.message-text {
+    word-wrap: break-word;
+    margin-bottom: 5px;
+    line-height: 1.4;
 }
 
 .received {
     background: var(--message-received);
     align-self: flex-start;
+    border-bottom-left-radius: 4px;
 }
 
 .sent {
     background: var(--message-sent);
     align-self: flex-end;
-    margin-left: auto;
+    border-bottom-right-radius: 4px;
 }
 
 .input-area {
@@ -318,6 +327,7 @@
     font-size: 16px;
     background: var(--background-secondary);
     color: var(--text-primary);
+    transition: all 0.3s ease;
 }
 
 .message-input:focus {
@@ -344,6 +354,10 @@
     background: var(--primary-dark);
 }
 
+.send-btn:active {
+    transform: scale(0.98);
+}
+
 .timestamp {
     font-size: 0.7em;
     color: var(--text-secondary);
@@ -353,15 +367,17 @@
 
 .contacts-search-results {
     margin-top: 15px;
+    max-height: 300px;
+    overflow-y: auto;
 }
 
 .search-contact {
-    padding: 10px;
+    padding: 12px 15px;
     border-bottom: 1px solid var(--border-light);
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     transition: background 0.3s;
 }
 
@@ -380,12 +396,14 @@
     justify-content: center;
     font-size: 12px;
     font-weight: bold;
+    margin-left: auto;
 }
 
 .no-results {
     text-align: center;
     color: var(--text-muted);
     padding: 20px;
+    font-style: italic;
 }
 
 /* Стили для переключателя темы в заголовке */
@@ -415,7 +433,7 @@
 }
 
 .contacts-list::-webkit-scrollbar {
-    width: 4px;
+    width: 6px;
 }
 
 .contacts-list::-webkit-scrollbar-track {
@@ -424,28 +442,365 @@
 
 .contacts-list::-webkit-scrollbar-thumb {
     background-color: var(--border-color);
-    border-radius: 2px;
+    border-radius: 3px;
+}
+
+.contacts-list::-webkit-scrollbar-thumb:hover {
+    background-color: var(--text-muted);
+}
+
+/* Стили для скролла в области сообщений */
+.messages {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+}
+
+.messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.messages::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 3px;
+}
+
+.messages::-webkit-scrollbar-thumb:hover {
+    background-color: var(--text-muted);
 }
 
 /* Анимации для сообщений */
-.message {
-    animation: messageAppear 0.3s ease-out;
-}
-
 @keyframes messageAppear {
     from {
         opacity: 0;
         transform: translateY(10px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
     }
 }
 
-/* Стили для поля ввода при фокусе */
-.message-input:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.2);
+/* Анимация для появления чата */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.messenger {
+    animation: fadeIn 0.5s ease-in;
+}
+
+/* Стили для статуса онлайн/офлайн */
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--success-color);
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    border: 2px solid var(--background-secondary);
+}
+
+.contact-avatar, .chat-avatar, .user-avatar {
+    position: relative;
+}
+
+/* Стили для уведомлений */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    z-index: 1000;
+    box-shadow: var(--shadow-heavy);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    max-width: 300px;
+    word-wrap: break-word;
+    font-weight: 500;
+}
+
+.notification.success {
+    background: var(--success-color);
+    color: white;
+}
+
+.notification.error {
+    background: var(--error-color);
+    color: white;
+}
+
+.notification.warning {
+    background: var(--warning-color);
+    color: white;
+}
+
+.notification.info {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .contacts {
+        width: 100%;
+        position: absolute;
+        z-index: 10;
+        height: 100%;
+    }
+    
+    .chat-area {
+        width: 100%;
+    }
+    
+    .contacts.hidden {
+        display: none;
+    }
+    
+    .message {
+        max-width: 85%;
+    }
+    
+    .header-logo-text {
+        display: none;
+    }
+    
+    .username {
+        display: none;
+    }
+}
+
+/* Стили для индикатора загрузки */
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 15px;
+    background: var(--message-received);
+    border-radius: 12px;
+    align-self: flex-start;
+    margin-bottom: 10px;
+    font-style: italic;
+    color: var(--text-secondary);
+}
+
+.typing-dots {
+    display: flex;
+    gap: 3px;
+}
+
+.typing-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--text-secondary);
+    animation: typingAnimation 1.4s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.typing-dot:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+@keyframes typingAnimation {
+    0%, 80%, 100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Стили для выбора эмодзи */
+.emoji-picker {
+    position: absolute;
+    bottom: 70px;
+    left: 15px;
+    background: var(--background-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: var(--shadow-heavy);
+    z-index: 100;
+    display: none;
+}
+
+.emoji-picker.active {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 5px;
+}
+
+.emoji-option {
+    padding: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.3s;
+}
+
+.emoji-option:hover {
+    background: var(--background-tertiary);
+}
+
+/* Стили для вложений */
+.attachments-preview {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    background: var(--background-tertiary);
+    border-top: 1px solid var(--border-color);
+}
+
+.attachment-item {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--background-secondary);
+}
+
+.attachment-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.remove-attachment {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: var(--error-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Улучшенные стили для временных меток */
+.message-time {
+    font-size: 0.7em;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    text-align: right;
+}
+
+.received .message-time {
+    text-align: left;
+}
+
+/* Стили для системных сообщений */
+.system-message {
+    align-self: center;
+    background: transparent;
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 0.9em;
+    box-shadow: none;
+    padding: 5px 10px;
+}
+
+/* Стили для пустого состояния */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+}
+
+.empty-state-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    margin-bottom: 10px;
+    color: var(--text-secondary);
+}
+
+.empty-state p {
+    line-height: 1.5;
+}
+
+/* Анимация пульсации для кнопок */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+/* Стили для выпадающего меню пользователя */
+.user-menu {
+    position: relative;
+}
+
+.menu-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: var(--background-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: var(--shadow-heavy);
+    padding: 8px 0;
+    min-width: 150px;
+    z-index: 100;
+    display: none;
+}
+
+.menu-dropdown.active {
+    display: block;
+}
+
+.menu-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.menu-item:hover {
+    background: var(--background-tertiary);
+}
+
+.menu-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 5px 0;
 }
