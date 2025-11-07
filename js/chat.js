@@ -1,9 +1,13 @@
 // Логика чата
 
-document.addEventListener('DOMContentLoaded', function() {
+// Глобальные переменные
+let activeContactId = null;
+let currentUser = null;
+
+document.addEventListener('DOMContentLoaded', function () {
     // Инициализация чата
     initChat();
-    
+
     // Обработчики событий
     setupEventListeners();
 });
@@ -11,21 +15,21 @@ document.addEventListener('DOMContentLoaded', function() {
 // Инициализация чата
 function initChat() {
     // Получаем данные пользователя
-    const currentUser = getFromStorage('currentUser');
-    
+    currentUser = getFromStorage('currentUser');
+
     if (!currentUser) {
         window.location.href = 'index.html';
         return;
     }
-    
+
     // Отображаем имя пользователя
     document.getElementById('usernameDisplay').textContent = currentUser.username;
     document.getElementById('userAvatar').textContent = currentUser.avatar;
-    
+
     // Загружаем контакты и чаты
     loadContacts();
     loadChats();
-    
+
     // Показываем мессенджер
     document.getElementById('messengerPage').style.display = 'block';
 }
@@ -34,28 +38,28 @@ function initChat() {
 function setupEventListeners() {
     // Кнопка выхода
     document.getElementById('logoutBtn').addEventListener('click', handleLogout);
-    
+
     // Кнопка нового чата
     document.getElementById('newChatBtn').addEventListener('click', showNewChatModal);
-    
+
     // Кнопка закрытия модального окна
     document.getElementById('closeModalBtn').addEventListener('click', hideNewChatModal);
-    
+
     // Кнопка отправки сообщения
     document.getElementById('sendBtn').addEventListener('click', sendMessage);
-    
+
     // Отправка сообщения по Enter
-    document.getElementById('messageInput').addEventListener('keypress', function(e) {
+    document.getElementById('messageInput').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
             sendMessage();
         }
     });
-    
+
     // Поиск контактов
     document.getElementById('searchContact').addEventListener('input', searchContacts);
-    
+
     // Закрытие модального окна при клике вне его
-    window.addEventListener('click', function(e) {
+    window.addEventListener('click', function (e) {
         const modal = document.getElementById('newChatModal');
         if (e.target === modal) {
             hideNewChatModal();
@@ -74,15 +78,15 @@ function loadContacts() {
         { id: 4, name: 'Дмитрий', avatar: 'Д', lastMessage: 'Отправил тебе файл', unread: 0 },
         { id: 5, name: 'Елена', avatar: 'Е', lastMessage: 'Спасибо за помощь!', unread: 1 }
     ];
-    
+
     const contactsList = document.getElementById('contactsList');
     contactsList.innerHTML = '';
-    
+
     contacts.forEach(contact => {
         const contactElement = document.createElement('div');
         contactElement.className = 'contact';
         contactElement.dataset.contactId = contact.id;
-        
+
         contactElement.innerHTML = `
             <div class="contact-avatar">${contact.avatar}</div>
             <div class="contact-info">
@@ -91,10 +95,15 @@ function loadContacts() {
             </div>
             ${contact.unread > 0 ? `<div class="unread-count">${contact.unread}</div>` : ''}
         `;
-        
+
         contactElement.addEventListener('click', () => selectContact(contact));
         contactsList.appendChild(contactElement);
     });
+
+    // Автоматически выбираем первый контакт
+    if (contacts.length > 0) {
+        selectContact(contacts[0]);
+    }
 }
 
 // Загрузка чатов
@@ -102,7 +111,7 @@ function loadChats() {
     // В реальном приложении здесь был бы запрос к серверу
     // Для демо используем тестовые данные
     const chats = getFromStorage('chats') || {};
-    
+
     // Сохраняем чаты для дальнейшего использования
     if (!getFromStorage('chats')) {
         const demoChats = {
@@ -120,7 +129,7 @@ function loadChats() {
                 { id: generateId(), text: "Хорошо, я подготовлю отчет", time: "08:20", type: "sent", sender: "You" }
             ]
         };
-        
+
         saveToStorage('chats', demoChats);
     }
 }
@@ -129,17 +138,23 @@ function loadChats() {
 function selectContact(contact) {
     // Убираем активный класс у всех контактов
     document.querySelectorAll('.contact').forEach(c => c.classList.remove('active'));
-    
+
     // Добавляем активный класс выбранному контакту
-    document.querySelector(`.contact[data-contact-id="${contact.id}"]`).classList.add('active');
-    
+    const contactElement = document.querySelector(`.contact[data-contact-id="${contact.id}"]`);
+    if (contactElement) {
+        contactElement.classList.add('active');
+    }
+
     // Обновляем информацию в заголовке чата
     document.getElementById('chatAvatar').textContent = contact.avatar;
     document.getElementById('chatPartnerName').textContent = contact.name;
-    
+
+    // Устанавливаем активный контакт
+    activeContactId = contact.id;
+
     // Показываем поле ввода сообщения
     document.getElementById('inputArea').style.display = 'flex';
-    
+
     // Загружаем сообщения для выбранного контакта
     loadMessages(contact.id);
 }
@@ -148,10 +163,10 @@ function selectContact(contact) {
 function loadMessages(contactId) {
     const chats = getFromStorage('chats') || {};
     const messages = chats[contactId] || [];
-    
+
     const messagesContainer = document.getElementById('messages');
     messagesContainer.innerHTML = '';
-    
+
     if (messages.length === 0) {
         messagesContainer.innerHTML = `
             <div class="welcome-message">
@@ -161,7 +176,7 @@ function loadMessages(contactId) {
         `;
         return;
     }
-    
+
     messages.forEach(message => {
         const messageElement = document.createElement('div');
         messageElement.className = `message ${message.type}`;
@@ -171,7 +186,7 @@ function loadMessages(contactId) {
         `;
         messagesContainer.appendChild(messageElement);
     });
-    
+
     // Прокручиваем к последнему сообщению
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
@@ -180,46 +195,47 @@ function loadMessages(contactId) {
 function sendMessage() {
     const messageInput = document.getElementById('messageInput');
     const text = messageInput.value.trim();
-    
-    if (!text) return;
-    
-    const activeContact = document.querySelector('.contact.active');
-    if (!activeContact) {
+
+    if (!text) {
+        showNotification('Введите сообщение', 'warning');
+        return;
+    }
+
+    if (!activeContactId) {
         showNotification('Выберите чат для отправки сообщения', 'error');
         return;
     }
-    
-    const contactId = activeContact.dataset.contactId;
+
     const chats = getFromStorage('chats') || {};
-    
+
     // Создаем новое сообщение
     const newMessage = {
         id: generateId(),
         text: text,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         type: 'sent',
-        sender: 'You'
+        sender: currentUser.username
     };
-    
+
     // Добавляем сообщение в чат
-    if (!chats[contactId]) {
-        chats[contactId] = [];
+    if (!chats[activeContactId]) {
+        chats[activeContactId] = [];
     }
-    
-    chats[contactId].push(newMessage);
+
+    chats[activeContactId].push(newMessage);
     saveToStorage('chats', chats);
-    
+
     // Очищаем поле ввода
     messageInput.value = '';
-    
+
     // Обновляем отображение сообщений
-    loadMessages(contactId);
-    
+    loadMessages(activeContactId);
+
     // Обновляем последнее сообщение в списке контактов
-    updateLastMessage(contactId, text);
-    
+    updateLastMessage(activeContactId, text);
+
     // Имитируем ответ
-    simulateReply(contactId);
+    simulateReply(activeContactId);
 }
 
 // Обновление последнего сообщения в списке контактов
@@ -228,8 +244,14 @@ function updateLastMessage(contactId, message) {
     if (contactElement) {
         const lastMessageElement = contactElement.querySelector('.last-message');
         if (lastMessageElement) {
-            lastMessageElement.textContent = message.length > 30 ? 
+            lastMessageElement.textContent = message.length > 30 ?
                 message.substring(0, 30) + '...' : message;
+        }
+
+        // Сбрасываем счетчик непрочитанных
+        const unreadCountElement = contactElement.querySelector('.unread-count');
+        if (unreadCountElement) {
+            unreadCountElement.remove();
         }
     }
 }
@@ -245,12 +267,12 @@ function simulateReply(contactId) {
         "Отличная идея!",
         "Я подумаю над этим"
     ];
-    
+
     const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-    
+
     setTimeout(() => {
         const chats = getFromStorage('chats') || {};
-        
+
         const replyMessage = {
             id: generateId(),
             text: randomResponse,
@@ -258,22 +280,32 @@ function simulateReply(contactId) {
             type: 'received',
             sender: document.getElementById('chatPartnerName').textContent
         };
-        
+
         if (!chats[contactId]) {
             chats[contactId] = [];
         }
-        
+
         chats[contactId].push(replyMessage);
         saveToStorage('chats', chats);
-        
+
         // Если это активный чат, обновляем сообщения
-        const activeContact = document.querySelector('.contact.active');
-        if (activeContact && activeContact.dataset.contactId === contactId) {
+        if (activeContactId === contactId) {
             loadMessages(contactId);
         }
-        
+
         // Обновляем последнее сообщение в списке контактов
         updateLastMessage(contactId, randomResponse);
+
+        // Добавляем счетчик непрочитанных, если чат не активен
+        if (activeContactId !== contactId) {
+            const contactElement = document.querySelector(`.contact[data-contact-id="${contactId}"]`);
+            if (contactElement && !contactElement.querySelector('.unread-count')) {
+                const unreadCount = document.createElement('div');
+                unreadCount.className = 'unread-count';
+                unreadCount.textContent = '1';
+                contactElement.appendChild(unreadCount);
+            }
+        }
     }, 1000 + Math.random() * 2000);
 }
 
@@ -285,13 +317,15 @@ function showNewChatModal() {
 // Скрыть модальное окно нового чата
 function hideNewChatModal() {
     document.getElementById('newChatModal').style.display = 'none';
+    document.getElementById('searchContact').value = '';
+    document.getElementById('contactsSearchResults').innerHTML = '';
 }
 
 // Поиск контактов
 function searchContacts() {
     const searchTerm = document.getElementById('searchContact').value.toLowerCase();
     const contactsList = document.getElementById('contactsSearchResults');
-    
+
     // В реальном приложении здесь был бы запрос к серверу
     // Для демо используем тестовые данные
     const allContacts = [
@@ -301,18 +335,18 @@ function searchContacts() {
         { id: 9, name: 'Галина', avatar: 'Г' },
         { id: 10, name: 'Денис', avatar: 'Д' }
     ];
-    
-    const filteredContacts = allContacts.filter(contact => 
-        contact.name.toLowerCase().includes(searchTerm)
-    );
-    
+
+    const filteredContacts = searchTerm ?
+        allContacts.filter(contact => contact.name.toLowerCase().includes(searchTerm)) :
+        allContacts;
+
     contactsList.innerHTML = '';
-    
+
     if (filteredContacts.length === 0) {
         contactsList.innerHTML = '<div class="no-results">Контакты не найдены</div>';
         return;
     }
-    
+
     filteredContacts.forEach(contact => {
         const contactElement = document.createElement('div');
         contactElement.className = 'search-contact';
@@ -320,13 +354,43 @@ function searchContacts() {
             <div class="contact-avatar">${contact.avatar}</div>
             <div class="contact-name">${contact.name}</div>
         `;
-        
+
         contactElement.addEventListener('click', () => {
             // В реальном приложении здесь была бы логика создания нового чата
             showNotification(`Чат с ${contact.name} создан`, 'success');
             hideNewChatModal();
+
+            // Добавляем новый контакт в список
+            addNewContact(contact);
         });
-        
+
         contactsList.appendChild(contactElement);
     });
+}
+
+// Добавление нового контакта
+function addNewContact(contact) {
+    const contactsList = document.getElementById('contactsList');
+
+    const contactElement = document.createElement('div');
+    contactElement.className = 'contact';
+    contactElement.dataset.contactId = contact.id;
+
+    contactElement.innerHTML = `
+        <div class="contact-avatar">${contact.avatar}</div>
+        <div class="contact-info">
+            <div class="contact-name">${contact.name}</div>
+            <div class="last-message">Новый чат</div>
+        </div>
+    `;
+
+    contactElement.addEventListener('click', () => selectContact(contact));
+    contactsList.appendChild(contactElement);
+
+    // Создаем пустой чат для нового контакта
+    const chats = getFromStorage('chats') || {};
+    if (!chats[contact.id]) {
+        chats[contact.id] = [];
+        saveToStorage('chats', chats);
+    }
 }
