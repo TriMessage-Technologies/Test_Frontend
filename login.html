@@ -6,13 +6,20 @@
     <title>TriMessage - Регистрация</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/theme.css">
 </head>
-<body>
+<body class="light-theme">
     <div class="container">
         <div class="login-form">
             <div class="logo">
-                <span class="logo-icon">💬</span>
-                TriMessage
+                <img src="assets/icons/TriMessage.png" alt="TriMessage" class="logo-image">
+                <span class="logo-text">TriMessage</span>
+            </div>
+            <div class="theme-toggle-container">
+                <button class="theme-toggle-btn" id="themeToggle">
+                    <span class="theme-icon">🌙</span>
+                    <span class="theme-text">Тёмная тема</span>
+                </button>
             </div>
             <div class="input-group">
                 <label for="regUsername">Имя пользователя</label>
@@ -37,7 +44,8 @@
         </div>
     </div>
 
-    <script src="js/auth.js"></script>
     <script src="js/utils.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/auth.js"></script>
 </body>
 </html>

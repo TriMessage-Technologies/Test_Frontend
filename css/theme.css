@@ -1,0 +1,147 @@
+/* Переменные для светлой темы */
+.light-theme {
+    --primary-color: #1e88e5;
+    --primary-dark: #1565c0;
+    --primary-light: #64b5f6;
+    --secondary-color: #4fc3f7;
+    --accent-color: #00b0ff;
+    
+    --background-primary: #f5f7fa;
+    --background-secondary: #ffffff;
+    --background-tertiary: #e3f2fd;
+    
+    --text-primary: #263238;
+    --text-secondary: #546e7a;
+    --text-muted: #90a4ae;
+    
+    --border-color: #e0e0e0;
+    --border-light: #f0f0f0;
+    
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    --shadow-heavy: 0 4px 20px rgba(0, 0, 0, 0.12);
+    
+    --success-color: #4caf50;
+    --warning-color: #ff9800;
+    --error-color: #f44336;
+    
+    --message-sent: #e3f2fd;
+    --message-received: #ffffff;
+}
+
+/* Переменные для темной темы */
+.dark-theme {
+    --primary-color: #2196f3;
+    --primary-dark: #1976d2;
+    --primary-light: #64b5f6;
+    --secondary-color: #4fc3f7;
+    --accent-color: #00b0ff;
+    
+    --background-primary: #121212;
+    --background-secondary: #1e1e1e;
+    --background-tertiary: #2d2d2d;
+    
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --text-muted: #707070;
+    
+    --border-color: #333333;
+    --border-light: #2a2a2a;
+    
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    --shadow-heavy: 0 4px 20px rgba(0, 0, 0, 0.4);
+    
+    --success-color: #4caf50;
+    --warning-color: #ff9800;
+    --error-color: #f44336;
+    
+    --message-sent: #2d3a4d;
+    --message-received: #2d2d2d;
+}
+
+/* Общие стили для переключателя темы */
+.theme-toggle-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.theme-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--background-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.theme-toggle-btn:hover {
+    background: var(--background-tertiary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.header-theme-toggle {
+    padding: 8px;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-icon {
+    font-size: 16px;
+}
+
+/* Анимация переключения темы */
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Специфические стили для темной темы */
+.dark-theme .login-form,
+.dark-theme .messenger,
+.dark-theme .modal-content {
+    background: var(--background-secondary);
+    color: var(--text-primary);
+}
+
+.dark-theme input,
+.dark-theme .contact,
+.dark-theme .message-input {
+    background: var(--background-tertiary);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+.dark-theme input::placeholder {
+    color: var(--text-muted);
+}
+
+.dark-theme .message.received {
+    background: var(--message-received);
+    color: var(--text-primary);
+}
+
+.dark-theme .message.sent {
+    background: var(--message-sent);
+    color: var(--text-primary);
+}
+
+.dark-theme .messages {
+    background: var(--background-primary);
+}
+
+.dark-theme .welcome-message {
+    color: var(--text-secondary);
+}
+
+.dark-theme .welcome-message h3 {
+    color: var(--text-primary);
+}

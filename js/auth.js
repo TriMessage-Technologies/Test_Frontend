@@ -50,8 +50,13 @@ function handleLogin() {
     // Сохраняем данные пользователя
     saveToStorage('currentUser', user);
     
+    // Показываем уведомление об успешном входе
+    showNotification(`Добро пожаловать, ${username}!`, 'success');
+    
     // Перенаправляем на страницу чата
-    window.location.href = 'chat.html';
+    setTimeout(() => {
+        window.location.href = 'chat.html';
+    }, 1000);
 }
 
 // Обработка регистрации
@@ -112,9 +117,18 @@ function checkAuthStatus() {
 
 // Выход из системы
 function handleLogout() {
+    // Получаем текущего пользователя для персонализированного сообщения
+    const currentUser = getFromStorage('currentUser');
+    const username = currentUser ? currentUser.username : '';
+    
     // Удаляем данные пользователя
     localStorage.removeItem('currentUser');
     
+    // Показываем уведомление о выходе
+    showNotification(`До свидания, ${username}!`, 'info');
+    
     // Перенаправляем на страницу входа
-    window.location.href = 'index.html';
+    setTimeout(() => {
+        window.location.href = 'index.html';
+    }, 1000);
 }
