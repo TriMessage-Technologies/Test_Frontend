@@ -10,7 +10,7 @@
 </head>
 <body class="light-theme">
     <div class="container">
-        <div class="login-form">
+        <form  class="login-form" action = 'http://127.0.0.1:8000/auth/register' method = 'POST' onsubmit="return handleregister()">
             <div class="logo">
                 <img src="assets/icons/TriMessage.png" alt="TriMessage" class="logo-image">
                 <span class="logo-text">TriMessage</span>
@@ -41,7 +41,7 @@
             <div class="register-link">
                 Уже есть аккаунт? <a href="index.html">Войти</a>
             </div>
-        </div>
+        </form>
     </div>
 
     <script src="js/utils.js"></script>
