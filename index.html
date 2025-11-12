@@ -10,7 +10,7 @@
 </head>
 <body class="light-theme">
     <div class="container" id="loginPage">
-        <div class="login-form">
+        <form class="login-form" action =  'http://127.0.0.1:8000/auth/login' method = 'GET' onsubmit = 'return handlelogin()'>
             <div class="logo">
                 <img src="assets/icons/TriMessage.png" alt="TriMessage" class="logo-image">
                 <span class="logo-text">TriMessage</span>
@@ -23,17 +23,17 @@
             </div>
             <div class="input-group">
                 <label for="username">Имя пользователя</label>
-                <input type="text" id="username" placeholder="Введите ваше имя">
+                <input type="text" id="username" name = 'username' placeholder="Введите ваше имя">
             </div>
             <div class="input-group">
                 <label for="password">Пароль</label>
-                <input type="password" id="password" placeholder="Введите пароль">
+                <input type="password" id="password" name = 'password' placeholder="Введите пароль">
             </div>
             <button class="login-btn" id="loginBtn">Войти</button>
             <div class="register-link">
                 Нет аккаунта? <a href="login.html" id="registerLink">Зарегистрироваться</a>
             </div>
-        </div>
+        </form>
     </div>
 
     <script src="js/utils.js"></script>
